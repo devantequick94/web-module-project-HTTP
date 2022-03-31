@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useHistory } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+import { useHistory, Link } from 'react-router-dom';
+
 import axios from 'axios';
-const EditMovieForm = (props) => {
+
+const AddMovieForm = (props) => {
 	const { push } = useHistory();
-	const { id } = useParams();
+
 	const { setMovies } = props;
 	const [movie, setMovie] = useState({
 		title:"",
@@ -13,11 +14,6 @@ const EditMovieForm = (props) => {
 		metascore: 0,
 		description: ""
 	});
-	useEffect(()=>{
-		axios.get(`http://localhost:9000/api/movies/${id}`)
-		.then(resp=>{setMovie(resp.data);})
-		.catch(err=>{console.log(err.response)})
-	}, []);
 
 	const handleChange = (e) => {
         setMovie({
@@ -25,20 +21,22 @@ const EditMovieForm = (props) => {
             [e.target.name]: e.target.value
         });
     }
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        axios.put(`http://localhost:9000/api/movies/${id}`, movie)
-		.then(res=>{setMovies(res.data); push(`/movies/${movie.id}`);})
+        axios.post(`http://localhost:9000/api/movies/`, movie)
+            .then(resp=>{setMovies(resp.data); push('/movies/');})
 			.catch(err=>{console.log(err);})
 	}
 
 	const { title, director, genre, metascore, description } = movie;
+
     return (
 	<div className="col">
 		<div className="modal-content">
 			<form onSubmit={handleSubmit}>
 				<div className="modal-header">						
-					<h4 className="modal-title">Editing <strong>{movie.title}</strong></h4>
+					<h4 className="modal-title">Adding <strong>{movie.title}</strong></h4>
 				</div>
 				<div className="modal-body">					
 					<div className="form-group">
@@ -61,7 +59,7 @@ const EditMovieForm = (props) => {
 						<label>Description</label>
 						<textarea value={description} onChange={handleChange} name="description" className="form-control"></textarea>
 					</div>
-									
+
 				</div>
 				<div className="modal-footer">			    
 					<input type="submit" className="btn btn-info" value="Save"/>
@@ -71,4 +69,5 @@ const EditMovieForm = (props) => {
 		</div>
 	</div>);
 }
-export default EditMovieForm;
+
+export default AddMovieForm

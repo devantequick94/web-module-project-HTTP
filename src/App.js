@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from "react";
-
 import { Route, Switch, Redirect } from "react-router-dom";
 import MovieList from './components/MovieList';
 import Movie from './components/Movie';
-
 import MovieHeader from './components/MovieHeader';
 
 import FavoriteMovieList from './components/FavoriteMovieList';
+import EditMovieForm from "./components/EditMovieForm";
+import AddMovieForm from "./components/AddMovieForm";
 
 import axios from 'axios';
 
 const App = (props) => {
   const [movies, setMovies] = useState([]);
   const [favoriteMovies, setFavoriteMovies] = useState([]);
-
   useEffect(()=>{
     axios.get('http://localhost:9000/api/movies')
       .then(res => {
@@ -25,18 +24,17 @@ const App = (props) => {
   }, []);
 
   const deleteMovie = (id)=> {
+    setMovies(movies.filter(item=>(item.id !== Number(id))));
   }
 
   const addToFavorites = (movie) => {
     
   }
-
   return (
     <div>
       <nav className="navbar navbar-dark bg-dark">
         <span className="navbar-brand" > HTTP / CRUD Module Project</span>
       </nav>
-
       <div className="container">
         <MovieHeader/>
         <div className="row ">
@@ -44,16 +42,20 @@ const App = (props) => {
         
           <Switch>
             <Route path="/movies/edit/:id">
+             <EditMovieForm setMovies={setMovies} />
+            </Route>
+            <Route path='/movies/add'>
+              <AddMovieForm/>
             </Route>
 
             <Route path="/movies/:id">
-              <Movie/>
+
+            <Movie deleteMovie={deleteMovie}/>
             </Route>
 
             <Route path="/movies">
               <MovieList movies={movies}/>
             </Route>
-
             <Route path="/">
               <Redirect to="/movies"/>
             </Route>
@@ -63,7 +65,4 @@ const App = (props) => {
     </div>
   );
 };
-
-
 export default App;
-
